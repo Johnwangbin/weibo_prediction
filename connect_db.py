@@ -9,12 +9,13 @@ class User(object):
     pass
 
 BaseModel=declarative_base()
-
+'''
 class Relations(BaseModel):
     __tablename__ = "relations"
     id = Column(Integer, primary_key=True, autoincrement=True)
     blogger = Column(Integer, index=True, nullable=False)
     follower = Column(Integer, nullable=False)
+'''
 
 class FollowerRelations(BaseModel):
     __tablename__ = "follower_relations"
