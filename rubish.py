@@ -23,9 +23,11 @@ __author__ = 'liying'
                 session.flush()
             session.commit()
 '''
-from file_manager import FileManager
-import chardet
 import binascii
+import chardet
+
+from import_data.file_manager import FileManager
+
 
 def test():
     a = [0,0]

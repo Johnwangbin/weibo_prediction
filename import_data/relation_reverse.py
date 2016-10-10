@@ -1,7 +1,9 @@
-from var_log import VarLog
-from file_manager import FileManager
 import os
+
 from import_data import ImportData
+from import_data.file_manager import FileManager
+from var_log import VarLog
+
 
 class RelationReverse():
     def __init__(self, store_filename):

@@ -41,7 +41,7 @@ class WeiboProfile(BaseModel):
     content     = Column(VARCHAR(200))
 
 engine = create_engine(
-            "mysql://root:888@localhost:3306/trend_prediction2?charset=utf8")
+            "mysql://root:888@192.168.0.100:3306/trend_prediction2?charset=utf8")
 metadata = MetaData(engine)
 
 def init_db():
