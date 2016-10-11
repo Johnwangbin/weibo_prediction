@@ -26,7 +26,7 @@ __author__ = 'liying'
 import binascii
 import chardet
 
-from import_data.file_manager import FileManager
+from file_manager import FileManager
 
 
 def test():
@@ -59,13 +59,18 @@ def weibo_process(b_text):
     return a_text
 
 if __name__ == "__main__":
-    with open("./data/WeiboProfile.train") as f:
+    with open("./data/trainScaleDepth.csv") as f:
         txt = f.readline()
+        print txt
+        print f.readline()
+    '''
     part = txt.split("\x01")[3].strip()
     print part
     print [part]
     print int(part[0],16) & 0xf8
     print weibo_process(part)
+    '''
+
     # print transfer_relation_process(txt.split("\n")[0])
     # line = [1,2,3]
     # o(line)

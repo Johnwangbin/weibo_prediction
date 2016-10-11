@@ -179,7 +179,7 @@ class ImportData(object):
 
     def readOneSentence(self, filename):
         counter = 0
-        with open("./data/" + filename) as f:
+        with open("./store/" + filename) as f:
             while 1:
                 line = f.readline()
                 if line == "":
@@ -192,6 +192,6 @@ if __name__ == "__main__":
     # import_data.batch_fill_transfer_relations_table()
     # import_data.batch_fill_user_and_relations2()
     # import_data.batch_fill_weibo_profile_table()
-    # import_data.readOneSentence("WeiboProfile.train")
+    import_data.readOneSentence("reverse_relation_values_2.txt")
     # import_data.readOneSentence("trainRepost.txt")
     # import_data.fill_user_and_relations()

@@ -23,6 +23,7 @@ class FollowerRelations(BaseModel):
     blogger  = Column(Integer, index=True, nullable=False)
     follower = Column(VARCHAR(408), nullable=False)
 
+
 #, ForeignKey("weibo_profile.id")
 class RepostRelations(BaseModel):
     __tablename__ = "repost_relations"
@@ -33,6 +34,7 @@ class RepostRelations(BaseModel):
     time_length = Column(Integer, nullable=False)
     content     = Column(VARCHAR(100))
     # index       = Index("weibo_blogger_ix", "weibo_id", "blogger_id", unique=True)
+
 
 class WeiboProfile(BaseModel):
     __tablename__ = "weibo_profile"
