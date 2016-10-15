@@ -33,7 +33,34 @@ class AttentionNetwork(object):
                     print id, "used"
         return network
 
+    def fetch_transmission_tree(self, blogger_id):
+        network = []
+        fetched = []
+        to_fetch = []
+        to_fetch.append(blogger_id)
+
+        with open_session() as s:
+            while len(to_fetch):
+                id = to_fetch.pop(0) # parm 0 stands for the first element of this list.
+                index = bisect.bisect_right(fetched, id) - 1
+                # the condition equals that id is not in the list.
+                if index == -1 or fetched[index] != id:
+                    bisect.insort(fetched, id)# add one element to the ordered list.
+                    results = s.query(RepostRelations.follower).\
+                        filter(RepostRelations.blogger==id).all()
+                    followers = []
+                    for result in results:
+                        followers.extend(result[0].split(","))
+                    to_fetch.extend(followers)
+                    print id, "add:", len(followers)
+                    network.append((id, followers))
+                else:
+                    print id, "used"
+        return network
+
+
 if __name__ == "__main__":
     attention_network = AttentionNetwork()
-    file_manager = FileManager("attention_network")
-    file_manager.store(attention_network.fetch_network(6666666))
+    # file_manager = FileManager("attention_network")
+    # file_manager.store(attention_network.fetch_network(7097284))
+    # print attention_network.fetch_blogger_by_blog("3793992178990261").start_time
