@@ -2,12 +2,20 @@
 from matplotlib import pyplot as plt
 from analysis_data.fetch import *
 from datetime import datetime
-from pylab import *
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import numpy as np
 import matplotlib as mpl
 zhfont = mpl.font_manager.FontProperties(fname='/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf')
 
+'''
+    to do:
+    表格的显示, 多层转发个数
+    文本的显示, 微博文本的显示
+    
+    yang xing:
+    统计75分钟前的每15分钟转发深度和规模.
+    根据用户关注网络,统计每一层(一般层数较小)的用户关注者的个数.
+'''
 class PlotTrend(object):
     def __init__(self):
         self.max_scale      = 0
@@ -19,25 +27,41 @@ class PlotTrend(object):
     def plot_blogger_transmission_trend(self, line):
         elements = line.strip().split(",")
         nums = map(int, elements[1:])
-        start_time  = fetch_blog_by_id(elements[0]).start_time
-        start_minutes = start_time.hour * 60 + start_time.minute
-        length = len(nums)
-        plt.figure(figsize=(50,40))
+        try:
+            blog = fetch_blog_by_id(elements[0])
+            start_time  = blog.start_time
+            start_minutes = start_time.hour * 60 + start_time.minute
+            length = len(nums)
+            plt.figure(figsize=(20,14))
 
-        self.trend_type = "scale"
-        self.plot_trend_graph(start_minutes, nums[length/2 - 1], nums[:length/2], 311)
-        plt.title(u"转发规模随时间变化", fontproperties=zhfont)
+            self.trend_type = "scale"
+            self.plot_trend_graph(start_minutes, nums[length/2 - 1], nums[:length/2], 311)
+            plt.title(u"转发规模随时间变化,开始时间:%d\n%s" % (start_minutes, blog.content),
+                        fontproperties=zhfont)
+            # plt.text(u"%s", blog.content)
 
-        self.trend_type = "deep"
-        self.plot_trend_graph(start_minutes, nums[length - 1], nums[length/2:], 312)
-        plt.title(u"转发深度随时间变化", fontproperties=zhfont)
+            self.trend_type = "deep"
+            self.plot_trend_graph(start_minutes, nums[length - 1], nums[length/2:], 312)
+            plt.title(u"转发深度随时间变化", fontproperties=zhfont)
 
-        self.trend_type = "rate"
-        rates = np.array(nums[:length/2]) / float(nums[0]) - 1
-        rates = np.array([rates[i] - rates[i-1] for i in range(1, len(rates))])
-        self.plot_trend_graph(start_minutes + 15, rates.max(), rates, 313)
-        plt.title(u"转发规模增长率随时间变化", fontproperties=zhfont)
-        plt.show()
+            self.trend_type = "rate"
+            count = np.count_nonzero(nums[:length/2])
+            if count == 0:
+                plt.title(u"全为0,不考虑")
+                raise TypeError
+            zero_count = length/2-count
+            nonzero_scale = nums[(length/2 - count):length/2]
+            rates = np.array(nonzero_scale) / float(nonzero_scale[0]) - 1
+            rates = np.array([rates[i] - rates[i-1] for i in range(1, len(rates))])
+            self.plot_trend_graph(start_minutes + 15*(zero_count + 1), rates.max(), rates, 313)
+            plt.title(u"转发规模增长率随时间变化", fontproperties=zhfont)
+
+        except AttributeError:
+            plt.title(u"没找到该条微博")
+        except TypeError:
+            plt.title(u"全为0,不考虑")
+
+        # plt.show()
 
 
     def plot_trend_graph(self, start_minutes, max_scale, y_data, sub_plot_num):
@@ -57,7 +81,7 @@ class PlotTrend(object):
         elif self.trend_type == "deep":
             y_limits = (2, 5, 10, 20)
         elif self.trend_type == "rate":
-            y_limits = (1, 2, 5, 10, 20, 50, 100)
+            y_limits = (1, 2, 5, 10, 20, 50, 100, 1000)
         y_limit = 0
         for limit in y_limits:
             if self.max_scale < limit:
@@ -74,7 +98,11 @@ class PlotTrend(object):
         xmajorFormatter = FormatStrFormatter('%d')
         xminorLocator = MultipleLocator(3)
 
-        ymajorLocator = MultipleLocator(self.y_major_scale)
+        try:
+            ymajorLocator = MultipleLocator(self.y_major_scale)
+        except ValueError:
+            print "11"
+            pass
         ymajorFormatter = FormatStrFormatter('%.1f')
         yminorLocator = MultipleLocator(self.y_minor_scale)
         # t = arange(0.0, 100.0, 1)
@@ -98,5 +126,13 @@ if __name__ == "__main__":
     with open("../data/trainScaleDepth.csv") as f:
         # for line in f:
         line = f.readline()
+        count = 0
         for line in f:
+            count += 1
+            # if count < 19:
+            #     continue
+            if count > 50:
+                break
+            print count
             plot_trend.plot_blogger_transmission_trend(line)
+            plt.savefig("../picture/trend_%d.jpg" % count)
