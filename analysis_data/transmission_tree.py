@@ -1,6 +1,7 @@
 #coding:utf-8
 from connect_db import *
 import networkx as nx
+import matplotlib.pyplot as plt
 
 class Node:
     def __init__(self,transfer_id,reposttime):
@@ -15,9 +16,6 @@ class Graph:
 
 G = []
 
-def save_graph(g,weiboid):
-    graph = Graph(g,weiboid)
-    G.append(graph)
 
 def readToGraph(repostdatas,blogger_id,start_time,weiboid):
     g = {}
@@ -28,6 +26,7 @@ def readToGraph(repostdatas,blogger_id,start_time,weiboid):
         n1 = Node(result[1],result[2]) #将节点实例化
         if (graph.has_node(n1)==False):#判断节点是否已经在图中存在
             graph.add_node(n1)#加入图
+
         if (result[0]==blogger_id):
             graph.add_edge(n,n1)#如果是转发的原博主微博即添加边
         else:
@@ -38,8 +37,10 @@ def readToGraph(repostdatas,blogger_id,start_time,weiboid):
                       graph.add_node(n2)
                   graph.add_edge(n1,n2)#连接这两个节点
                   break
+    nx.draw(graph)
+    plt.show()
 
-        save_graph(graph,weiboid)
+    gr = Graph(weiboid,graph)
 
 
 def getRepostData(weiboID,blogger_id,start_time):
@@ -48,23 +49,43 @@ def getRepostData(weiboID,blogger_id,start_time):
             id = weiboID.pop(0)
             results = s.query(RepostRelations.blogger_id,RepostRelations.transfer_id,RepostRelations.time_length).\
                filter(RepostRelations.weibo_id==id).all()#查询原微博的转发信息
+
             repostdatas =  []
+
             for result in results:
-               repostdatas.append(list(result))#将转发信息转换为一个为二维列表
+                repostdatas.append(result)
+                break
 
+            tag = True
+            for result in results:
+               for repostdata in repostdatas:
+                   if(list(result)[1]==repostdata[1] and  list(result)[2]>=repostdata[2]):
+                       tag = False
+                       break
+                   if(list(result)[1]==repostdata[1] and  list(result)[2]<repostdata[2]):
+                       tag = False
+                       repostdatas.remove(repostdata)
+                       repostdatas.append(list(result))#将转发信息转换为一个为二维列表
+                       break
+               if(tag):
+                   repostdatas.append(list(result))
+               tag = True
 
+            # #对原微博信息进行去重，即同一个转发者去掉转发时间更迟那项
+            # for repostdata1 in repostdatas:
+            #     for repostdata2 in repostdatas:
+            #         if(repostdata1[1]==repostdata2[1] and repostdata1[2]>repostdata2[2]):
+            #             print repostdata1[1]
+            #             print repostdata2[1]
+            #             print repostdata1[2]
+            #             print repostdata2[2]
+            #             print "666"
+            #             repostdatas.remove(repostdata1)
 
-
-            #对原微博信息进行去重，即同一个转发者去掉转发时间更迟那项
-            for repostdata1 in repostdatas:
-                for repostdata2 in repostdatas:
-                    if(repostdata1[1]==repostdata2[1]&repostdata1[2]>repostdata2[2]):
-                        repostdatas.remove(repostdata1)
-
-
+            print len(repostdatas)
+            print "---------------------------------------------"
 
             readToGraph(repostdatas,blogger_id,start_time,id)#将转发数据和原博主读入图
-
 
 def getWeiboProfileData():
     with open_session() as s:
@@ -72,6 +93,7 @@ def getWeiboProfileData():
 
         for result in results:
             getRepostData([result.id],result.blogger_id,result.start_time)#取得原微博的转发信息
+
 
 
 if __name__ == '__main__':
