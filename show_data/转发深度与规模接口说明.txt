@@ -2,7 +2,7 @@
 实例化类getRepostinfo（在getRepostInfo.py中）
 调用方法getrostinfo(results)(参数results为表weiboprofile的查询结果)
 返回值格式：字典 {
-                  ‘weiboid1’:,{
+                  ‘weiboid1’:{
                                   '15':{"scale": xxx,"depth":xxx},
                                   '30':{"scale":xxx,"depth":xxx},
                                   '45':{...},
