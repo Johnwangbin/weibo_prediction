@@ -6,7 +6,7 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import numpy as np
 import matplotlib as mpl
 zhfont = mpl.font_manager.FontProperties(fname='/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf')
-from getRepsotInfo import *
+from get_repost_info import *
 
 '''
     to do:
@@ -18,10 +18,10 @@ from getRepsotInfo import *
     根据用户关注网络,统计每一层(一般层数较小)的用户关注者的个数.
 '''
 def Repostinfo():
-    getrepostinfo = getRepostInfo()
+    getrepostinfo = GetRepostInfo()
     with open_session() as s:
         results = s.query(WeiboProfile)
-        getrepostinfo.getRostInfo(results)
+        getrepostinfo.getrostinfo(results)
 
     return getrepostinfo.RepostInfo #原微博前75分钟每15分钟的转发深度，规模，以字典形式存储的
 

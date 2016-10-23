@@ -1,5 +1,5 @@
 要获得所有微博前75分钟的转发深度和规模
-实例化类getRepostinfo（在getRepostInfo.py中）
+实例化类GetRepostinfo（在get_repost_info.py中）
 调用方法getrostinfo(results)(参数results为表weiboprofile的查询结果)
 返回值格式：字典 {
                   ‘weiboid1’:,{
@@ -7,7 +7,12 @@
                                   '30':{"scale":xxx,"depth":xxx},
                                   '45':{...},
                                   '60':{...},
-                                  '75':{...}
+                                  '75':{...},
+                                  'transdfers_follower':{
+                                     'transferid1' : xxx,
+                                     'transferid2' : xxx,
+                                      ......
+                                  }
                                  },
                    'weiboid2':{
                                   ...

@@ -6,19 +6,23 @@ class Node:
         self._blogger_id = blogger_id
         self._transfer_id = transfer_id
         self._time_length = time_length
+        self._follower = 0
         self._children = []
 
-    def getBloggerId(self):
+    def getbloggerid(self):
         return self._blogger_id
 
-    def getTranserId(self):
+    def gettranserid(self):
         return self._transfer_id
 
-    def getTimeLength(self):
+    def gettimelength(self):
         return self._time_length
 
-    def getChildren(self):
+    def getchildren(self):
         return  self._children
+
+    def getfollowernum(self):
+        return self._follower
 
     def add(self,node):
         self._children.append(node)
@@ -31,7 +35,7 @@ class Tree:
         self._head.add(node)
 
 
-class buildRepostTree:
+class BuildRepostTree:
     def __init__(self):
         self._tree = Tree()
 
